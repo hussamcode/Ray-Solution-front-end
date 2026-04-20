@@ -1,0 +1,66 @@
+<main class="max-w-screen-2xl mx-auto px-8 py-12">
+    <div class="flex flex-col lg:flex-row gap-12">
+        <!--Sidebar Filters-->
+        <aside class="w-full lg:w-72 shrink-0 space-y-10">
+            <section>
+                <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                    <span class="fa-solid fa-lines-leaning"></span>
+                    Category
+                </h3>
+                <div class="space-y-3"> 
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" id="checkbox-Peripherals" >
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Peripherals</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" [checked]="false"  >
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Displays</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" [checked]="false">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Ergonomics</span>
+                    </label>
+                     <label class="flex items-center gap-3 cursor-pointer group">
+                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" [checked]="false" >
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Connectivity</span>
+                    </label>
+                </div>
+            </section>
+            <section>
+                <h3 class="font-headline font-bold text-lg mb-6">Brand</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Nexus Tech</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Vertex Design</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Lumina Optic</span>
+                    </label>
+                </div>
+            </section>
+        </aside>
+        <!--Product Grid (Asymmetric)-->
+        <div class="grow">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-8">
+                
+                <!-- Regular Card 1-->
+                <app-card></app-card>
+                <!-- Regular Card 2-->
+                <app-card></app-card>
+                <!-- Regular Card 3-->
+                <app-card></app-card>
+                <!-- Regular Card 4-->
+                <app-card></app-card>
+                <!-- Regular Card 5-->
+                <app-card></app-card>
+                <!-- Regular Card 6-->
+                 <app-card></app-card>
+            </div>
+        </div>
+    </div>
+</main>

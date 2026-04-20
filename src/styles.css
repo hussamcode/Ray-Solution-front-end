@@ -1,3 +1,73 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+body{
+    font-family: 'Inter';
+    background-color: rgb(247 249 251 / var(--tw-bg-opacity, 1));
+    color: rgb(25 28 30 / var(--tw-text-opacity, 1));
+    -webkit-font-smoothing: antialiased;
+}
+.font-body {
+    font-family: Inter;
+}
+.font-headline{
+    font-family: 'Manrope';
+    font-style: normal;
+    font-display: swap;
+}
+.border-outline-variant {
+    --tw-border-opacity: 1;
+    border-color: rgb(194 198 212 / var(--tw-border-opacity, 1));
+}
+.text-primary {
+    --tw-text-opacity: 1;
+    color: rgb(0 70 145 / var(--tw-text-opacity, 1));
+}
+.text-on-surface{
+    --tw-text-opacity: 1;
+    color: rgb(25 28 30 / var(--tw-text-opacity, 1));
+}
+.bg-surface-container-lowest {
+    --tw-bg-opacity: 1;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+.max-w-screen-2xl {
+    max-width: 1536px;
+}
+.text-on-secondary-container {
+    --tw-text-opacity: 1;
+    color: rgb(87 101 122 / var(--tw-text-opacity, 1));
+}
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+.to-primary-container {
+    --tw-gradient-to: #265eae var(--tw-gradient-to-position);
+}
+.bg-surface-container-high {
+    --tw-bg-opacity: 1;
+    background-color: rgb(230 232 234 / var(--tw-bg-opacity, 1));
+}
+.transition-colors {
+    transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+.text-on-primary-fixed-variant {
+    --tw-text-opacity: 1;
+    color: rgb(0 69 143 / var(--tw-text-opacity, 1));
+}
+.hover\:bg-primary:hover{
+        --tw-bg-opacity: 1;
+    background-color: rgb(0 70 145 / var(--tw-bg-opacity, 1));
+}
+.hover\:text-white:hover{
+        --tw-bg-opacity: 1;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
