@@ -1,0 +1,46 @@
+
+<div class="bg-background font-body text-on-background min-h-screen">
+    <app-header></app-header>
+    <div class="flex w-max mx-auto">
+
+        <main class="flex-1 overflow-y-auto px-6 py-8 md:px-10 lg:px-12">
+
+            
+            <!-- Header -->
+            <header class="mb-10">
+                <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">
+                Pending Authorizations
+                </h1>
+
+                <p class="mt-2 text-sm text-slate-500 md:text-base">
+                Review and manage hardware allocation requests for your business unit.
+                </p>
+            </header>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-4">
+
+                <!-- Card -->
+            @for (item of orderRequests(); track item.code) {
+                @if (role=='manger') {
+                    @if (item.status=='PENDING_APPROVAL') {
+                    <app-takitrequsts [orderRequest]="item"></app-takitrequsts>
+                }
+                }
+                    @if (role=='admin') {
+                    @if (item.status=='PROCESSING') {
+                    <app-takitrequsts [orderRequest]="item"></app-takitrequsts>
+                }
+                }
+
+            
+            }
+
+            </div>
+
+            </main>
+
+    </div>
+
+</div>
+

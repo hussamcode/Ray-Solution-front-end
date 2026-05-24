@@ -1,0 +1,124 @@
+<div class="bg-slate-50 text-slate-900 antialiased">
+    <app-header></app-header>
+
+    <div class="flex">
+
+        <!-- Sidebar -->
+        <aside class="hidden lg:flex flex-col p-4 space-y-2 h-[calc(100vh-64px)] w-64 border-r border-slate-200 bg-slate-50 sticky top-16">
+            <div class="px-4 py-6 mb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-sm">layers</span>
+                    </div>
+                    <span class="font-bold text-lg text-slate-900">Enterprise Hardware</span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium">Procurement Portal</p>
+            </div>
+
+            <nav class="space-y-1">
+                <a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 rounded-lg text-sm font-medium"
+                   routerLink="/home" routerLinkActive="!text-blue-700 !bg-blue-50">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    <span>Catalog</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 rounded-lg text-sm font-medium"
+                   routerLink="/order" routerLinkActive="!text-blue-700 !bg-blue-50">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>Orders</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 rounded-lg text-sm font-medium"
+                   routerLink="/support" routerLinkActive="!text-blue-700 !bg-blue-50">
+                    <span class="material-symbols-outlined">contact_support</span>
+                    <span>Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 overflow-x-hidden">
+            <div class="max-w-6xl mx-auto px-8 py-12 space-y-6">
+
+                <!-- Header -->
+                <header class="mb-12">
+                    <h1 class="font-extrabold text-5xl text-slate-900 mb-2">Order History</h1>
+                    <p class="text-lg text-slate-500 font-normal">
+                        Track and manage your enterprise hardware procurement lifecycle.
+                    </p>
+                </header>
+
+                <!-- Filter -->
+                <div class="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit">
+                    <button class="px-6 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all"
+                            [class.bg-white]="selectedFilter() === 'ALL'"
+                            [class.text-blue-700]="selectedFilter() === 'ALL'"
+                            [class.shadow-sm]="selectedFilter() === 'ALL'"
+                            [class.text-slate-500]="selectedFilter() !== 'ALL'"
+                            (click)="selectedFilter.set('ALL')">
+                        All Orders
+                    </button>
+                    <button class="px-6 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all"
+                            [class.bg-white]="selectedFilter() === 'PENDING'"
+                            [class.text-blue-700]="selectedFilter() === 'PENDING'"
+                            [class.shadow-sm]="selectedFilter() === 'PENDING'"
+                            [class.text-slate-500]="selectedFilter() !== 'PENDING'"
+                            (click)="selectedFilter.set('PENDING')">
+                        Pending
+                    </button>
+                    <button class="px-6 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all"
+                            [class.bg-white]="selectedFilter() === 'COMPLETED'"
+                            [class.text-blue-700]="selectedFilter() === 'COMPLETED'"
+                            [class.shadow-sm]="selectedFilter() === 'COMPLETED'"
+                            [class.text-slate-500]="selectedFilter() !== 'COMPLETED'"
+                            (click)="selectedFilter.set('COMPLETED')">
+                        Completed
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                @if (isLoading()) {
+                    <div class="flex items-center justify-center py-24">
+                        <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                }
+
+                <!-- Error -->
+                @if (errorMessage()) {
+                    <div class="bg-red-50 text-red-600 px-6 py-4 rounded-xl">{{ errorMessage() }}</div>
+                }
+
+                <!-- Orders -->
+                @if (!isLoading()) {
+                    <div class="flex flex-col gap-6">
+                        @for (item of filteredOrders(); track item.id) { <!-- ✅ track item.id -->
+                            <app-takitorder [ordercode]="item.code" />
+                        }
+                    </div>
+
+                    <!-- Empty -->
+                    @if (filteredOrders().length === 0) {
+                        <div class="flex flex-col items-center justify-center py-24 text-center">
+                            <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">inbox</span>
+                            <h3 class="text-xl font-bold text-slate-600 mb-2">No Orders Found</h3>
+                            <p class="text-slate-400 font-normal">Your order history will appear here.</p>
+                        </div>
+                    }
+                }
+
+                <!-- Footer -->
+                <div class="mt-16 p-8 bg-slate-100 rounded-2xl flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                        <span class="material-symbols-outlined text-3xl text-blue-700">support_agent</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-xl text-slate-900 mb-1">Need help with an order?</h4>
+                        <p class="text-slate-500 font-normal">Our procurement specialists are available 24/7.</p>
+                    </div>
+                    <button class="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer shrink-0">
+                        Contact Support
+                    </button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>

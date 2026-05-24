@@ -1,0 +1,184 @@
+<div class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+    <app-header></app-header>
+    <main class="pb-24">
+
+        <section class="relative overflow-hidden bg-gray-50 py-24 px-6">
+
+            <!-- Background Blur -->
+            <div class="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl"></div>
+
+            <div class="relative z-10 mx-auto max-w-4xl text-center">
+
+                <h1
+                class="mb-8 text-5xl font-extrabold tracking-tight text-gray-900 md:text-6xl"
+                >
+                How can we help you?
+                </h1>
+            </div>
+        </section>
+        <section class="mx-auto mt-15 grid max-w-7xl gap-16 px-6 md:grid-cols-5 items-start">
+
+        <!-- Left Side -->
+        <div class="md:col-span-2">
+
+            <span class="mb-4 block text-xs font-extrabold uppercase tracking-widest text-blue-700">
+            Get in touch
+            </span>
+
+            <h2 class="mb-6 text-4xl font-bold text-slate-900">
+            Contact Support
+            </h2>
+
+            <p class="mb-10 text-lg leading-relaxed text-slate-600">
+            Our dedicated account specialists are available Monday through Friday,
+            8am – 6pm EST to ensure your operations never miss a beat.
+            </p>
+
+            <div class="space-y-8">
+
+            <!-- Email -->
+            <div class="flex items-start gap-4">
+
+                <div class="rounded-xl bg-slate-100 p-3 text-blue-600">
+                <span class="material-symbols-outlined">
+                    mail
+                </span>
+                </div>
+
+                <div>
+                <p class="font-bold text-slate-900">
+                    Email Support
+                </p>
+
+                <p class="text-slate-600">
+                    enterprise-support@atrium.io
+                </p>
+
+                <p class="mt-1 text-xs text-slate-400">
+                    Typical response: Under 2 hours
+                </p>
+                </div>
+
+            </div>
+
+            <!-- Phone -->
+            <div class="flex items-start gap-4">
+
+                <div class="rounded-xl bg-slate-100 p-3 text-blue-600">
+                <span class="material-symbols-outlined">
+                    call
+                </span>
+                </div>
+
+                <div>
+                <p class="font-bold text-slate-900">
+                    Priority Phone
+                </p>
+
+                <p class="text-slate-600">
+                    +1 (888) 555-0192
+                </p>
+
+                <p class="mt-1 text-xs text-slate-400">
+                    Available for Platinum accounts
+                </p>
+                </div>
+
+            </div>
+
+            </div>
+
+        </div>
+
+        <!-- Form -->
+        <div class="rounded-3xl bg-white p-10 shadow-sm md:col-span-3">
+
+            <form class="space-y-6">
+
+            <div class="grid gap-6 md:grid-cols-2">
+
+                <!-- Name -->
+                <div class="space-y-2">
+
+                <label class="block text-sm font-semibold text-slate-700">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    placeholder="John Doe"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                />
+
+                </div>
+
+                <!-- Email -->
+                <div class="space-y-2">
+
+                <label class="block text-sm font-semibold text-slate-700">
+                    Work Email
+                </label>
+
+                <input
+                    type="email"
+                    placeholder="j.doe@company.com"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                />
+
+                </div>
+
+            </div>
+
+            <!-- Select -->
+            <div class="space-y-2">
+
+                <label class="block text-sm font-semibold text-slate-700">
+                Issue Category
+                </label>
+
+                <select
+                class="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                >
+                <option>Technical Support</option>
+                <option>Billing &amp; Invoices</option>
+                <option>Order Status</option>
+                <option>Returns &amp; RMA</option>
+                <option>Account Management</option>
+                </select>
+
+            </div>
+
+            <!-- Message -->
+            <div class="space-y-2">
+
+                <label class="block text-sm font-semibold text-slate-700">
+                Message
+                </label>
+
+                <textarea
+                rows="5"
+                placeholder="How can our procurement specialists assist you today?"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                ></textarea>
+
+            </div>
+
+            <!-- Button -->
+            <button
+                type="button"
+                class="w-full rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 py-4 font-bold text-white transition hover:shadow-lg active:scale-[0.98]"
+            >
+                Submit Support Ticket
+            </button>
+
+            <p class="text-center text-xs italic text-slate-400">
+                By submitting, you agree to our Service Level Agreements and Privacy Policy.
+            </p>
+
+            </form>
+
+        </div>
+
+        </section>
+    </main>
+</div>

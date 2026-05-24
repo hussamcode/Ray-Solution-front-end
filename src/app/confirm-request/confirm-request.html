@@ -1,0 +1,110 @@
+<div class="bg-slate-50 font-bold text-slate-900 antialiased">
+    <app-header></app-header>
+
+    <main class="max-w-screen-xl mx-auto px-8 py-12">
+
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Confirm Request</h1>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-12">
+
+            <!-- Left Column -->
+            <div class="flex-1 space-y-12">
+                <section>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-blue-700">business</span>
+                        </div>
+                        <h2 class="text-xl font-bold">Business Information</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-8 rounded-xl">
+
+                        <!-- Establishment Name -->
+                        <div class="col-span-2">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Establishment Name</label>
+                            <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   placeholder="e.g. Nexus Innovation Hub"
+                                   type="text"
+                                   [(ngModel)]="Information.establishmentname"> <!-- ✅ placeholder واحد -->
+                        </div>
+
+                        <!-- Person's Name -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Person's Name</label>
+                            <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   placeholder="Full name"
+                                   type="text"
+                                   [(ngModel)]="Information.name">
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Phone Number</label>
+                            <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   placeholder="+966 (555) 000-0000"
+                                   type="tel"
+                                   [(ngModel)]="Information.phonenumber">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Order Summary -->
+            <aside class="lg:w-96">
+                <div class="sticky top-32 bg-white p-8 rounded-xl shadow-sm ring-1 ring-slate-100">
+                    <h3 class="text-lg font-bold mb-6">Order Summary</h3>
+
+                    <!-- Products List -->
+                    <div class="max-h-64 overflow-y-auto space-y-4 pr-2 mb-8">
+                        @for (item of producerall(); track item.id) {
+                            <div class="flex gap-4">
+                                <div class="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                                    <img class="w-full h-full object-cover"
+                                         src="data:image/png;base64,{{item.image}}"
+                                         alt="{{ item.name }}"/>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold text-slate-900 leading-tight">{{ item.name }}</h4>
+                                    <p class="text-xs text-slate-500 mt-1">{{ item.description }}</p>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- ✅ إذا القائمة فاضية -->
+                        @if (producerall().length === 0) {
+                            <p class="text-sm text-slate-400 text-center py-4">No items in order</p>
+                        }
+                    </div>
+
+                    <!-- ✅ Complete Order Button مربوط بـ submitOrder() -->
+                    <button class="w-full py-4 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                            style="background: linear-gradient(to bottom right, #004691, #265eae);"
+                            (click)="submitOrder()"
+                            [disabled]="isSubmitting() || !pendingOrder()">
+                        @if (isSubmitting()) {
+                            Processing...
+                        } @else {
+                            Complete Order
+                        }
+                    </button>
+
+                    <!-- ✅ error message -->
+                    @if (errorMessage()) {
+                        <p class="mt-3 text-xs text-red-500 text-center">{{ errorMessage() }}</p>
+                    }
+
+                    <!-- Security Note -->
+                    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+                        <span class="material-symbols-outlined text-sm">lock</span>
+                        <span>Secure AES-256 Encrypted Checkout</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>

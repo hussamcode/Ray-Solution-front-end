@@ -2,14 +2,14 @@
     <div class="flex flex-col lg:flex-row gap-12">
         <!--Sidebar Filters-->
         <aside class="w-full lg:w-72 shrink-0 space-y-10">
-            <section>
+            <!-- <section>
                 <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
                     <span class="fa-solid fa-lines-leaning"></span>
                     Category
                 </h3>
                 <div class="space-y-3"> 
                     <label class="flex items-center gap-3 cursor-pointer group">
-                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" id="checkbox-Peripherals" >
+                        <input checked class="rounded border-outline-variant text-primary  h-5 w-5" type="checkbox" id="checkbox-Peripherals" [(ngModel)]="brandvale" >
                         <span class="text-on-surface group-hover:text-primary transition-colors">Peripherals</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
@@ -25,42 +25,52 @@
                         <span class="text-on-surface group-hover:text-primary transition-colors">Connectivity</span>
                     </label>
                 </div>
-            </section>
+            </section> -->
             <section>
-                <h3 class="font-headline font-bold text-lg mb-6">Brand</h3>
+                <h3 class="font-headline font-bold text-lg mb-2">Brand</h3>
                 <div class="space-y-3">
+                    <form [formGroup]="form">
+
                     <label class="flex items-center gap-3 cursor-pointer group">
-                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
-                        <span class="text-on-surface group-hover:text-primary transition-colors">Nexus Tech</span>
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio" formControlName="brand" (change)="onChange()"  value="all" >
+                        <span class="text-on-surface group-hover:text-primary transition-colors">all</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
-                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
-                        <span class="text-on-surface group-hover:text-primary transition-colors">Vertex Design</span>
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio" formControlName="brand" (change)="onChange()"  value="Apple">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Apple</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
-                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio">
-                        <span class="text-on-surface group-hover:text-primary transition-colors">Lumina Optic</span>
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio" formControlName="brand" (change)="onChange()"  value="Samsung">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Samsung</span>
                     </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio" formControlName="brand" (change)="onChange()"  value="Huawei">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">Huawei</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="border-outline-variant text-primary h-5 w-5 " name="brand" type="radio" formControlName="brand" (change)="onChange()"  value="HP">
+                        <span class="text-on-surface group-hover:text-primary transition-colors">HP</span>
+                    </label>
+                    </form>
                 </div>
             </section>
         </aside>
         <!--Product Grid (Asymmetric)-->
         <div class="grow">
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-8">
-                
-                <!-- Regular Card 1-->
-                <app-card></app-card>
-                <!-- Regular Card 2-->
-                <app-card></app-card>
-                <!-- Regular Card 3-->
-                <app-card></app-card>
-                <!-- Regular Card 4-->
-                <app-card></app-card>
-                <!-- Regular Card 5-->
-                <app-card></app-card>
-                <!-- Regular Card 6-->
-                 <app-card></app-card>
-            </div>
+           
+
+ 
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+    @for (protectedItem of filteredproducers(); track protectedItem.id) {
+        <app-card 
+            [name]="protectedItem.name" 
+            [description]="protectedItem.description"
+            [url]="protectedItem.image"
+            [IdProducer]="protectedItem.id"
+            [producerAdd]="protectedItem.producerAdd">
+        </app-card>
+    }
+</div>
         </div>
     </div>
 </main>
