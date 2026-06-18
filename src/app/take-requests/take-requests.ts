@@ -204,7 +204,6 @@ export class TakeRequests implements OnInit, OnDestroy {
     this.errorMessage.set('');
 
     const status = this.isAdmin ? 'PROCESSED' : 'PROCESSING';
-    console.log("test:"+this.deliveryAt);
     this.orderService.updateOrderStatusAdmin(order.code, {
       status,
       deliveryAt: this.isAdmin ? this.deliveryAt : undefined
@@ -223,7 +222,7 @@ export class TakeRequests implements OnInit, OnDestroy {
 
     this.isSubmitting.set(true);
     this.errorMessage.set('');
-    console
+
     this.orderService.updateOrderStatusAdmin(order.code, {
       status: 'REJECTED'
     }).pipe(

@@ -1,5 +1,3 @@
-import { SafeUrl } from "@angular/platform-browser";
-
 export const Brand = {
   Other: 'Other',
   Samsung: 'Samsung',
@@ -30,10 +28,6 @@ export interface UpdateProducerRequest {
 }
 export interface UpdateProducerRequestAdd {
   producerAdd: number;
-}
- export interface ImageItem{
-   id: number;
-  url: SafeUrl;
 }
 export interface StatusUpdateMessage {
   id: number;

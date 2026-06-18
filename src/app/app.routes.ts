@@ -1,7 +1,5 @@
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { AuthComponent } from './auth-component/auth-component';
-import { HomeComponent } from './home-component/home-component';
-import { NgModule } from '@angular/core';
 import { order } from './order/order';
 import { ConfirmRequest } from './confirm-request/confirm-request';
  import {SuccessfulOrder} from './successful-order/successful-order'
@@ -29,8 +27,3 @@ export const routes: Routes = [
 
       
 ];
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

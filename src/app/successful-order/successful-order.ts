@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
 import { ordermodel } from '../models/ordermodel.model';
@@ -66,6 +66,11 @@ export class SuccessfulOrder implements OnInit{
     this.producerall.set([]);
 
     const codes = order.producerCode ?? [];
+
+    if (codes.length === 0) {
+      this.isLoading.set(false);
+      return;
+    }
 
     let loaded = 0;
     codes.forEach(code => {

@@ -9,10 +9,10 @@ import { OrderUpdate } from "../models/ordermodel.model";
   {providedIn:'root'}
 )
 export class WebsocketService {
-   private destoryRef = inject(DestroyRef);
+   private destroyRef = inject(DestroyRef);
   private client!: Client;
   private connected$ = new BehaviorSubject<boolean>(false);
-  private stausUpdate$ = new BehaviorSubject<null | StatusUpdateMessage>(null);
+  private statusUpdate$ = new BehaviorSubject<null | StatusUpdateMessage>(null);
   private orderUpdate$ = new BehaviorSubject<OrderUpdate | null>(null);
 
   private subscriptions = new Map<string, StompSubscription>();
@@ -20,9 +20,10 @@ export class WebsocketService {
   constructor() {
     this.initClient();
 
-    this.destoryRef.onDestroy(() => {
+    this.destroyRef.onDestroy(() => {
       this.disconnect();
-      this.stausUpdate$.complete();
+      this.statusUpdate$.complete();
+      this.orderUpdate$.complete();
       this.connected$.complete();
     });
   }
@@ -38,12 +39,10 @@ export class WebsocketService {
       connectionTimeout: 10000,
 
       onConnect: (frame) => {
-        console.log('[Websocket] Connected!!');
          this.connected$.next(true);
-         this.subscripeToTopics();
+         this.subscribeToTopics();
       },
       onDisconnect: ()=>{
-        console.log('[Websocket] Disconnect!!');
         this.connected$.next(false);
         this.subscriptions.clear();
       },
@@ -59,7 +58,6 @@ export class WebsocketService {
       },
 
       onWebSocketClose: (event) => {
-        console.log('[WebSocket] WebSocket closed:', event.code, event.reason);
         this.connected$.next(false);
       },
     });
@@ -67,44 +65,44 @@ export class WebsocketService {
   }
     connect(): void {
     if (this.client.active) {
-      console.log('[Websocket] Already connected or connecting');
       return;
     }
     this.client.activate();
   }
 
   getStatusUpdates(): Observable<StatusUpdateMessage | null> {
-    return this.stausUpdate$.asObservable();
+    return this.statusUpdate$.asObservable();
   }
 
   isConnected(): Observable<boolean> {
     return this.connected$.asObservable();
   }
-  private subscripeToTopics(): void {
+  private subscribeToTopics(): void {
     const subscription = this.client.subscribe('/topic/producer', (message) => {
       try {
         const update = JSON.parse(message.body) as StatusUpdateMessage;
-        console.log('[WebSocket] Received update:', update);
-        this.stausUpdate$.next(update);
+        this.statusUpdate$.next(update);
       } catch (error) {
         console.error('[WebSocket] Failed to parse message:', error);
       }
     });
-        this.client.subscribe('/topic/order', (message) => {
-        console.log('[WebSocket] Order update:', message.body);
-        const update = JSON.parse(message.body);
+        const orderSubscription = this.client.subscribe('/topic/order', (message) => {
+        try {
+        const update = JSON.parse(message.body) as OrderUpdate;
         this.orderUpdate$.next(update);
+        } catch (error) {
+        console.error('[WebSocket] Failed to parse order message:', error);
+        }
     });
   
     this.subscriptions.set('/topic/producer', subscription);
+    this.subscriptions.set('/topic/order', orderSubscription);
   }
   getOrderUpdates(): Observable<OrderUpdate | null> {
     return this.orderUpdate$.asObservable();
 }
    disconnect(): void {
     if (this.client.active) {
-      console.log('[WebSocket] Disconnecting...');
-
       // Unsubscribe from all topics
       this.subscriptions.forEach((subscription) => {
         subscription.unsubscribe();

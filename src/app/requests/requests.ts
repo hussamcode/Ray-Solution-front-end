@@ -7,7 +7,13 @@ import { Header } from "../header/header";
 import { TakeRequests } from "../take-requests/take-requests";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WebsocketService } from '../services/websocket-service';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+
+interface JwtPayload {
+  sub: string;
+  role: string;
+  exp: number;
+}
 
 @Component({
   selector: 'app-requests',
@@ -30,7 +36,7 @@ export class Requests implements OnInit {
     this.webSocketService.connect();
     this.loadOrders();
     this.handleOrderUpdates();
-    this.cheekrole()
+    this.checkRole()
     
 
   }
@@ -68,51 +74,48 @@ export class Requests implements OnInit {
 
           const exists = list.find((o) => o.id === update.id);
 
-// ✅ أضف PROCESSING
-if (!exists && (update.status === 'PENDING_APPROVAL' || update.status === 'PROCESSING' || update.status === 'PROCESSED')) {
-    return [...list, {
-        id: update.id,
-        userId: update.userId ?? 0,
-        code: update.code ?? '',
-        producerCode: update.producerCode ?? [],
-        status: update.status,
-        acceptableAT: update.acceptableAT ?? '',
-        phonenumber: update.phonenumber ?? '',
-        deliveryAt: update.deliveryAt ?? null,
-        name: update.name ?? '',
-        establishmentname: update.establishmentname ?? '',
-        latitude: update.latitude ?? null,
-        longitude: update.longitude ?? null,
-        address: update.address ?? null
-    }];
-}
+          if (!exists && (update.status === 'PENDING_APPROVAL' || update.status === 'PROCESSING' || update.status === 'PROCESSED')) {
+              return [...list, {
+                  id: update.id,
+                  userId: update.userId ?? 0,
+                  code: update.code ?? '',
+                  producerCode: update.producerCode ?? [],
+                  status: update.status,
+                  acceptableAT: update.acceptableAT ?? '',
+                  phonenumber: update.phonenumber ?? '',
+                  deliveryAt: update.deliveryAt ?? null,
+                  name: update.name ?? '',
+                  establishmentname: update.establishmentname ?? '',
+                  latitude: update.latitude ?? null,
+                  longitude: update.longitude ?? null,
+                  address: update.address ?? null
+              }];
+          }
 
-return list.map((o) => {
-    if (o.id !== update.id) return o;
-    
-    // ✅ احذف فقط إذا تغير لـ status غير مطلوب
-    if (update.status !== 'PENDING_APPROVAL' && update.status !== 'PROCESSING' && update.status !== 'PROCESSED') {
-        return null;
-    }
-    
-    return {
-        ...o,
-        producerCode: update.producerCode ?? o.producerCode,
-        status: update.status ?? o.status,
-        acceptableAT: update.acceptableAT ?? o.acceptableAT,
-        deliveryAt: update.deliveryAt ?? o.deliveryAt,
-        phonenumber: update.phonenumber ?? o.phonenumber,
-        name: update.name ?? o.name,
-        establishmentname: update.establishmentname ?? o.establishmentname,
-        latitude: update.latitude ?? o.latitude,
-        longitude: update.longitude ?? o.longitude,
-        address: update.address ?? o.address
-    };
-}).filter(o => o !== null) as ordermodel[];
+          if (exists && (update.status !== 'PENDING_APPROVAL' && update.status !== 'PROCESSING' && update.status !== 'PROCESSED')) {
+              return list.filter((o) => o.id !== update.id);
+          }
+
+          return list.map((o) => {
+              if (o.id !== update.id) return o;
+              return {
+                  ...o,
+                  producerCode: update.producerCode ?? o.producerCode,
+                  status: update.status ?? o.status,
+                  acceptableAT: update.acceptableAT ?? o.acceptableAT,
+                  deliveryAt: update.deliveryAt ?? o.deliveryAt,
+                  phonenumber: update.phonenumber ?? o.phonenumber,
+                  name: update.name ?? o.name,
+                  establishmentname: update.establishmentname ?? o.establishmentname,
+                  latitude: update.latitude ?? o.latitude,
+                  longitude: update.longitude ?? o.longitude,
+                  address: update.address ?? o.address
+              };
+          });
         });
       });
   }
-  cheekrole(): void {
+  checkRole(): void {
 
   const token = localStorage.getItem('token');
 
@@ -124,10 +127,8 @@ return list.map((o) => {
 
     const decoded = jwtDecode<JwtPayload>(token);
     
-    this.role = decoded.sub ?? '';
+    this.role = decoded.role ?? '';
   } catch (error) {
-
-    console.log(error);
 
   }
 }

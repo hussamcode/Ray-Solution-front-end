@@ -5,7 +5,7 @@ import { MyProducer } from '../models/myproducer.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject, catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { MyproducerService } from '../services/myproducer-service';
 import { ProducerService } from '../services/producer-service';
 import { OrderService } from '../services/OrderService';
@@ -18,20 +18,15 @@ import { Navbar } from "../navbar/navbar";
   styleUrl: './header.css',
 })
 export class Header implements OnInit {
-isActive(arg0: string) {
-throw new Error('Method not implemented.');
-}
   public myproducerService = inject(MyproducerService);
-  public orderSrvice = inject(OrderService);
   private webSocketService =inject(WebsocketService);
   public producerService = inject(ProducerService);
-  protecteds = signal<MyProducer[]>([]);
   allprotectedadd = signal<number>(0);
   private destroyRef = inject(DestroyRef);
    public orderService = inject(OrderService);
    private router = inject(Router);
    //serch
-  searchTermvale: string = '';
+  searchTermValue: string = '';
 
   get isCatalogPage(): boolean {
     return this.router.url === '/home';

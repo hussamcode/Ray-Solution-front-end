@@ -132,7 +132,6 @@ export class Card implements OnInit {
         this.orderarry.set(orders);
        
       const pending = this.orderarry().find((o) => o.status === 'AWAITING_CONFIRMATION');
-    console.log(pending);
     const prod = this.producer();
     if (!prod) return;
 
@@ -143,8 +142,6 @@ export class Card implements OnInit {
         })
         .subscribe({
           next: (res) => {
-            let all = this.orderarry();
-            
             this.orderarry.update((list) => [...list, res]);
             this.isSubmitting.set(false);
           },

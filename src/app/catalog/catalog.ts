@@ -5,7 +5,6 @@ import { Producer, StatusUpdateMessage } from '../models/producer.model';
 import { ProducerService } from '../services/producer-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WebsocketService } from '../services/websocket-service';
-import { Header } from '../header/header';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -23,9 +22,9 @@ export class Catalog implements OnInit {
   protecteditemlist = signal<Producer[]>([]);
   private destroyRef = inject(DestroyRef);
   filteredproducers =  signal<Producer[]>([]);
-  searchvlue ="";
+  searchValue ="";
   //filter brand
-  brandvale: string = 'all';
+  brandValue: string = 'all';
   
   ngOnInit(): void {
     this.loadProducer();
@@ -45,7 +44,7 @@ export class Catalog implements OnInit {
     });
      this.producerService.currentSearchTerm$
       .subscribe(value => {
-        this.searchvlue = value; 
+         this.searchValue = value; 
         this.onSearch(value);
       });
   }
@@ -85,17 +84,15 @@ export class Catalog implements OnInit {
 
       return updatedProtecteds;
     });
-         console.log('searchvlue:', this.searchvlue); // ← هل فيه قيمة؟
-    console.log('filteredproducers:', this.filteredproducers()); // ← هل تحدّث؟
-    this.onSearch(this.searchvlue);
+    this.onSearch(this.searchValue);
   }
  //serach
 onSearch(value: string) {
-    this.searchvlue = value;
+    this.searchValue = value;
     let list = this.protecteditemlist();
 
-    if (this.brandvale !== 'all') {
-        list = list.filter(p => p.brand === this.brandvale);
+    if (this.brandValue !== 'all') {
+        list = list.filter(p => p.brand === this.brandValue);
     }
 
     if (value) {
@@ -108,8 +105,8 @@ onSearch(value: string) {
 }
 
 onChange() {
-    this.brandvale = this.form.get('brand')?.value;
-    this.onSearch(this.searchvlue); // ✅ أعد الفلتر مع البراند
+    this.brandValue = this.form.get('brand')?.value;
+    this.onSearch(this.searchValue); // ✅ أعد الفلتر مع البراند
 }
 //radio brand
  constructor(private fb: FormBuilder) {

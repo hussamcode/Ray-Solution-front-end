@@ -23,7 +23,7 @@ export class AuthComponent {
   // ✅ Verification signals
   showVerification = signal(false);
   verifyEmail = signal('');
-  verifyCode = signal('');
+  verifyCode = '';
   verifyError = signal('');
   verifySuccess = signal('');
   isVerified = signal(false);
@@ -105,12 +105,12 @@ export class AuthComponent {
     this.verifyError.set('');
     this.verifySuccess.set('');
 
-    if (!this.verifyCode()) {
+    if (!this.verifyCode) {
       this.verifyError.set('Verification code is required');
       return;
     }
 
-    const data = { email: this.verifyEmail(), verificationCode: this.verifyCode() };
+    const data = { email: this.verifyEmail(), verificationCode: this.verifyCode };
     this.authService.verify(data).subscribe({
       next: () => {
         this.verifySuccess.set('Account verified successfully! You can now log in.');
@@ -137,7 +137,7 @@ export class AuthComponent {
 
   backToLogin() {
     this.showVerification.set(false);
-    this.verifyCode.set('');
+    this.verifyCode = '';
     this.verifyError.set('');
     this.verifySuccess.set('');
     this.isVerified.set(false);

@@ -101,6 +101,12 @@ export class Takitorder implements OnInit {
 
     this.producerall.set([]); // reset
 
+    if (codes.length === 0) {
+      this.isLoading.set(false);
+      return;
+    }
+
+    let loaded = 0;
     codes.forEach(code => {
       this.producerService
         .getProducerByCode(code)
@@ -116,7 +122,10 @@ export class Takitorder implements OnInit {
             this.producerall.update(arr => [...arr, producer]);
           }
 
-          this.isLoading.set(false);
+          loaded++;
+          if (loaded === codes.length) {
+            this.isLoading.set(false);
+          }
         });
     });
   }

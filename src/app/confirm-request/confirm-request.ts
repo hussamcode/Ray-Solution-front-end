@@ -100,6 +100,11 @@ export class ConfirmRequest implements OnInit, AfterViewInit, OnDestroy {
 
     const codes = order.producerCode ?? [];
 
+    if (codes.length === 0) {
+      this.isLoading.set(false);
+      return;
+    }
+
     let loaded = 0;
     codes.forEach(code => {
       this.producerService.getProducerByCode(code).pipe(

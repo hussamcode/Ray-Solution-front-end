@@ -13,7 +13,8 @@ interface JwtPayload {
   selector: 'app-navbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, FormsModule],
-  templateUrl: './navbar.html'
+  templateUrl: './navbar.html',
+  styleUrl: './navbar.css'
 })
 export class Navbar implements OnInit {
 
