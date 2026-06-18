@@ -94,6 +94,56 @@
           </div>
         }
 
+        @case ('PENDING_APPROVAL') {
+          <div class="md:w-1/3 flex flex-col items-center justify-center gap-3 rounded-xl p-6"
+               style="background-color: rgba(30, 64, 175, 0.05);">
+
+            <div class="pending-icon">
+              <span class="material-symbols-outlined" style="font-size: 2.5rem; color: #1e40af;">
+                schedule
+              </span>
+            </div>
+
+            <p class="text-sm font-semibold text-blue-900">
+              Waiting for approval...
+            </p>
+
+            <button
+              class="flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-all"
+              (click)="changeLocation()"
+            >
+              <span class="material-symbols-outlined text-base">location_on</span>
+              Change Location
+            </button>
+
+          </div>
+        }
+
+        @case ('PROCESSING') {
+          <div class="md:w-1/3 flex flex-col items-center justify-center gap-3 rounded-xl p-6"
+               style="background-color: rgba(30, 64, 175, 0.05);">
+
+            <div class="dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+
+            <p class="text-sm font-semibold text-blue-900">
+              Your order is being processed...
+            </p>
+
+            <button
+              class="flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-all"
+              (click)="changeLocation()"
+            >
+              <span class="material-symbols-outlined text-base">location_on</span>
+              Change Location
+            </button>
+
+          </div>
+        }
+
         @case ('PROCESSED') {
           <div class="md:w-1/3 flex flex-col justify-center rounded-xl p-6 relative overflow-hidden"
                style="background-color: rgba(0, 70, 145, 0.05);">
@@ -114,18 +164,45 @@
           </div>
         }
 
-        @case ('DELIVERED') {
-          <div class="md:w-1/3 flex flex-col justify-center">
-            <button class="flex items-center justify-between w-full p-4 rounded-xl hover:bg-slate-50">
-              <div>
-                <p class="text-sm font-bold">Order Support</p>
-                <p class="text-xs text-slate-500">Request replacement</p>
-              </div>
+        @case ('REJECTED') {
+          <div class="md:w-1/3 flex flex-col items-center justify-center gap-3 rounded-xl p-6 relative overflow-hidden"
+               style="background-color: rgba(220, 38, 38, 0.05);">
 
-              <span class="material-symbols-outlined text-slate-400">
-                chevron_right
+            <div class="badge-rejected">
+              <span class="material-symbols-outlined" style="font-size: 2.5rem; color: #dc2626;">
+                cancel
               </span>
-            </button>
+            </div>
+
+            <p class="text-xs font-bold text-red-700 uppercase tracking-wider">
+              Rejected
+            </p>
+
+            <p class="text-sm font-semibold text-red-900 text-center">
+              Your order has been declined
+            </p>
+
+          </div>
+        }
+
+        @case ('DELIVERED') {
+          <div class="md:w-1/3 flex flex-col items-center justify-center gap-3 rounded-xl p-6 relative overflow-hidden"
+               style="background-color: rgba(34, 197, 94, 0.05);">
+
+            <div class="badge-delivered">
+              <span class="material-symbols-outlined" style="font-size: 2.5rem; color: #16a34a;">
+                verified
+              </span>
+            </div>
+
+            <p class="text-xs font-bold text-green-700 uppercase tracking-wider">
+              Delivered
+            </p>
+
+            <p class="text-sm font-semibold text-green-900 text-center">
+              Your order has been successfully delivered
+            </p>
+
           </div>
         }
 

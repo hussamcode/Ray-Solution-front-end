@@ -1,0 +1,292 @@
+<div class="bg-slate-50 text-slate-900 antialiased">
+    <app-header></app-header>
+
+    <main class="max-w-6xl mx-auto px-8 py-12">
+
+        <!-- Header -->
+        <header class="mb-12">
+            <h1 class="font-extrabold text-5xl text-slate-900 mb-2">
+                @if (isAdminView()) {
+                    Order Locations
+                } @else {
+                    Change Order Location
+                }
+            </h1>
+            <p class="text-lg text-slate-500 font-normal">
+                @if (isAdminView()) {
+                    View and update delivery locations for all orders.
+                } @else {
+                    Update the receipt location for order {{ orderCode() }}.
+                }
+            </p>
+        </header>
+
+        <!-- Success Toast -->
+        @if (successMessage()) {
+            <div class="mb-6 flex items-center gap-3 bg-green-50 text-green-700 px-6 py-4 rounded-xl ring-1 ring-green-200">
+                <span class="material-symbols-outlined text-green-600">check_circle</span>
+                <span class="text-sm font-semibold">{{ successMessage() }}</span>
+            </div>
+        }
+
+        <!-- Error -->
+        @if (errorMessage()) {
+            <div class="mb-6 flex items-center gap-3 bg-red-50 text-red-600 px-6 py-4 rounded-xl ring-1 ring-red-200">
+                <span class="material-symbols-outlined text-red-500">error</span>
+                <span class="text-sm font-semibold">{{ errorMessage() }}</span>
+            </div>
+        }
+
+        <!-- Loading -->
+        @if (isLoading()) {
+            <div class="flex items-center justify-center py-24">
+                <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }
+
+        <!-- ==================== ADMIN / MANAGER VIEW ==================== -->
+        @if (isAdminView() && !isLoading()) {
+            <!-- Search -->
+            <div class="mb-6">
+                <div class="relative max-w-sm">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+                    <input type="text" [ngModel]="searchCode()" (ngModelChange)="searchCode.set($event)"
+                           placeholder="Search by order code..."
+                           class="w-full pl-10 pr-4 py-3 bg-white border-none rounded-xl ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none text-sm transition-all">
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-100">
+                            <th class="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Code</th>
+                            <th class="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Status</th>
+                            <th class="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Establishment</th>
+                            <th class="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Address</th>
+                            <th class="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Location</th>
+                            <th class="text-right px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (item of filteredOrders(); track item.id) {
+                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                                [class.bg-blue-50/30]="isEditing(item)">
+                                <td class="px-6 py-4">
+                                    <span class="font-bold text-sm text-slate-900">{{ item.code }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold {{ getStatusClass(item.status) }}">
+                                        {{ getStatusLabel(item.status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600">{{ item.establishmentname || '-' }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-600 max-w-[200px] truncate">{{ item.address || '-' }}</td>
+                                <td class="px-6 py-4 text-xs text-slate-500">
+                                    @if (item.latitude != null && item.longitude != null) {
+                                        {{ item.latitude }}, {{ item.longitude }}
+                                    } @else {
+                                        <span class="text-slate-300">Not set</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    @if (isEditing(item)) {
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button (click)="saveLocation()"
+                                                    [disabled]="isSaving()"
+                                                    class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer">
+                                                {{ isSaving() ? 'Saving...' : 'Save' }}
+                                            </button>
+                                            <button (click)="cancelEdit()"
+                                                    class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors cursor-pointer">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    } @else {
+                                        <button (click)="startEdit(item)"
+                                                class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors cursor-pointer">
+                                            Edit Location
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+
+                            @if (isEditing(item)) {
+                                <tr>
+                                    <td colspan="6" class="px-6 py-6 bg-blue-50/20">
+                                        <div class="max-w-3xl mx-auto space-y-4">
+                                            <div class="flex justify-end">
+                                                <button type="button" (click)="useMyLocation()" [disabled]="isGettingLocation()"
+                                                        class="h-9 px-4 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+                                                    <span class="material-symbols-outlined text-base">my_location</span>
+                                                    {{ isGettingLocation() ? 'Locating...' : 'Use My Location' }}
+                                                </button>
+                                            </div>
+
+                                            <div [id]="'mini-map-' + item.code" class="location-map"></div>
+                                            <p class="text-xs text-slate-400 text-center">Click on the map to set the location</p>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label class="block text-xs font-bold text-slate-500 mb-1">Latitude</label>
+                                                    <input type="number" [(ngModel)]="editForm().latitude" step="any" (ngModelChange)="onLatLngInput()"
+                                                           class="w-full bg-white border-none rounded-lg p-3 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none text-sm transition-all">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-bold text-slate-500 mb-1">Longitude</label>
+                                                    <input type="number" [(ngModel)]="editForm().longitude" step="any" (ngModelChange)="onLatLngInput()"
+                                                           class="w-full bg-white border-none rounded-lg p-3 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none text-sm transition-all">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-bold text-slate-500 mb-1">Address</label>
+                                                    <input type="text" [(ngModel)]="editForm().address"
+                                                           class="w-full bg-white border-none rounded-lg p-3 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none text-sm transition-all"
+                                                           placeholder="Street, district, city...">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        @if (filteredOrders().length === 0) {
+                            <tr>
+                                <td colspan="6" class="px-6 py-24 text-center">
+                                    <span class="material-symbols-outlined text-6xl text-slate-300 mb-4 block">inbox</span>
+                                    <h3 class="text-xl font-bold text-slate-600 mb-2">
+                                        @if (searchCode()) {
+                                            No Orders Found
+                                        } @else {
+                                            No Orders Found
+                                        }
+                                    </h3>
+                                    <p class="text-slate-400 font-normal">
+                                        @if (searchCode()) {
+                                            No orders match "{{ searchCode() }}".
+                                        } @else {
+                                            Orders will appear here once created.
+                                        }
+                                    </p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <!-- ==================== USER VIEW ==================== -->
+        @if (!isAdminView() && !isLoading() && order()) {
+            <div class="flex flex-col lg:flex-row gap-8">
+
+                <!-- Left: Map & Form -->
+                <div class="flex-1 space-y-6">
+                    <!-- Order Info -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-700">receipt_long</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Order</p>
+                                <p class="font-bold text-lg text-slate-900">{{ order()!.code }}</p>
+                            </div>
+                            <span class="ml-auto inline-flex px-3 py-1 rounded-full text-xs font-bold {{ getStatusClass(order()!.status) }}">
+                                {{ getStatusLabel(order()!.status) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Map Picker -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-blue-700">location_on</span>
+                                </div>
+                                <h2 class="text-xl font-bold">Receipt Location</h2>
+                            </div>
+                            <button type="button" (click)="useMyLocation()" [disabled]="isGettingLocation()"
+                                    class="h-9 px-4 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+                                <span class="material-symbols-outlined text-base">my_location</span>
+                                {{ isGettingLocation() ? 'Locating...' : 'Use My Location' }}
+                            </button>
+                        </div>
+
+                        <div id="order-location-map" class="location-map"></div>
+                        <p class="text-xs text-slate-400 text-center">Click on the map to set your receipt location</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Latitude</label>
+                                <input type="number" [(ngModel)]="editForm().latitude" step="any" (ngModelChange)="onLatLngInput()"
+                                       class="w-full bg-slate-50 border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                       placeholder="e.g. 33.3128">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Longitude</label>
+                                <input type="number" [(ngModel)]="editForm().longitude" step="any" (ngModelChange)="onLatLngInput()"
+                                       class="w-full bg-slate-50 border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                       placeholder="e.g. 44.3615">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Address</label>
+                            <input type="text" [(ngModel)]="editForm().address"
+                                   class="w-full bg-slate-50 border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   placeholder="Street, district, city...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Save -->
+                <aside class="lg:w-80">
+                    <div class="sticky top-32 bg-white p-8 rounded-2xl shadow-sm space-y-6">
+                        <h3 class="text-lg font-bold">Update Location</h3>
+                        <p class="text-sm text-slate-500">
+                            Set the receipt location for your order. You can click on the map or enter coordinates manually.
+                        </p>
+
+                        <button (click)="saveLocation()"
+                                [disabled]="isSaving()"
+                                class="w-full py-4 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                                style="background: linear-gradient(to bottom right, #004691, #265eae);">
+                            @if (isSaving()) {
+                                <span class="flex items-center justify-center gap-2">
+                                    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </span>
+                            } @else {
+                                <span class="flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-base">save</span>
+                                    Save Location
+                                </span>
+                            }
+                        </button>
+
+                        <button (click)="router.navigate(['/order'])"
+                                class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors cursor-pointer text-sm">
+                            Back to Orders
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        }
+
+        <!-- Empty state for user view -->
+        @if (!isAdminView() && !isLoading() && !order() && !errorMessage()) {
+            <div class="flex flex-col items-center justify-center py-24 text-center">
+                <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">search_off</span>
+                <h3 class="text-xl font-bold text-slate-600 mb-2">Order Not Found</h3>
+                <p class="text-slate-400 font-normal mb-6">The order you're looking for doesn't exist or you don't have access.</p>
+                <button (click)="router.navigate(['/order'])"
+                        class="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors cursor-pointer">
+                    Back to Orders
+                </button>
+            </div>
+        }
+
+    </main>
+</div>

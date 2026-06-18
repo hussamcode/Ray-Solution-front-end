@@ -26,27 +26,86 @@
                         <div class="col-span-2">
                             <label class="block text-sm font-semibold text-slate-600 mb-2">Establishment Name</label>
                             <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   [class.ring-red-400]="establishmentNameError()"
                                    placeholder="e.g. Nexus Innovation Hub"
                                    type="text"
-                                   [(ngModel)]="Information.establishmentname"> <!-- ✅ placeholder واحد -->
+                                   [(ngModel)]="Information.establishmentname"
+                                   (input)="establishmentNameError.set('')">
+                            @if (establishmentNameError()) {
+                                <p class="mt-1 text-xs text-red-500">{{ establishmentNameError() }}</p>
+                            }
                         </div>
 
                         <!-- Person's Name -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-600 mb-2">Person's Name</label>
                             <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   [class.ring-red-400]="personNameError()"
                                    placeholder="Full name"
                                    type="text"
-                                   [(ngModel)]="Information.name">
+                                   [(ngModel)]="Information.name"
+                                   (input)="personNameError.set('')">
+                            @if (personNameError()) {
+                                <p class="mt-1 text-xs text-red-500">{{ personNameError() }}</p>
+                            }
                         </div>
 
                         <!-- Phone Number -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-600 mb-2">Phone Number</label>
                             <input class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   [class.ring-red-400]="phoneNumberError()"
                                    placeholder="+966 (555) 000-0000"
                                    type="tel"
-                                   [(ngModel)]="Information.phonenumber">
+                                   [(ngModel)]="Information.phonenumber"
+                                   (input)="phoneNumberError.set('')">
+                            @if (phoneNumberError()) {
+                                <p class="mt-1 text-xs text-red-500">{{ phoneNumberError() }}</p>
+                            }
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Location of Receipt -->
+                <section>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-blue-700">location_on</span>
+                        </div>
+                        <h2 class="text-xl font-bold">Location of Receipt</h2>
+                    </div>
+
+                    <div class="bg-slate-50 p-8 rounded-xl space-y-6">
+                        <div class="flex justify-end">
+                            <button type="button" (click)="useMyLocation()" [disabled]="isGettingLocation()" class="h-9 px-4 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed">
+                                <span class="material-symbols-outlined text-base">my_location</span>
+                                {{ isGettingLocation() ? 'Locating...' : 'Use My Location' }}
+                            </button>
+                        </div>
+
+                        <div id="confirm-picker-map" class="location-map"></div>
+                        <p class="text-xs text-slate-400 text-center">Click on the map to set your receipt location</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Latitude</label>
+                                <input type="number" name="latitude" [(ngModel)]="Information.latitude" step="any" (ngModelChange)="onLatLngInput()"
+                                       class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                       placeholder="e.g. 33.3128">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Longitude</label>
+                                <input type="number" name="longitude" [(ngModel)]="Information.longitude" step="any" (ngModelChange)="onLatLngInput()"
+                                       class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                       placeholder="e.g. 44.3615">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Address</label>
+                            <input type="text" name="address" [(ngModel)]="Information.address"
+                                   class="w-full bg-white border-none rounded-lg p-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all placeholder:text-slate-300"
+                                   placeholder="Street, district, city...">
                         </div>
                     </div>
                 </section>

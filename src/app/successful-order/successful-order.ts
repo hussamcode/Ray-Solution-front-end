@@ -49,9 +49,9 @@ export class SuccessfulOrder implements OnInit{
         catchError(() => {
           this.errorMessage.set('Failed to load orders');
           this.isLoading.set(false);
-          return of([]);
+          return of(null);
         })
-      ).subscribe((order:any) => {
+      ).subscribe((order: ordermodel | null) => {
         if (!order) return;
         this.dataOrder.set(order);
         this.isLoading.set(false);

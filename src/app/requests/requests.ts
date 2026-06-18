@@ -2,20 +2,20 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { OrderService } from '../services/OrderService';
-import { ordermodel } from '../models/ordermodel.model';
+import { ordermodel, OrderUpdate } from '../models/ordermodel.model';
 import { Header } from "../header/header";
-import { Takitrequsts } from "../takitrequsts/takitrequsts";
+import { TakeRequests } from "../take-requests/take-requests";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WebsocketService } from '../services/websocket-service';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 @Component({
-  selector: 'app-requsts',
-  imports: [Header, Takitrequsts],
-  templateUrl: './requsts.html',
-  styleUrl: './requsts.css',
+  selector: 'app-requests',
+  imports: [Header, TakeRequests],
+  templateUrl: './requests.html',
+  styleUrl: './requests.css',
 })
-export class Requsts implements OnInit {
+export class Requests implements OnInit {
 
   public orderService = inject(OrderService);
   private router = inject(Router);
@@ -46,7 +46,7 @@ export class Requsts implements OnInit {
     ).subscribe((orders: ordermodel[]) => {
         this.orderRequests.set(
             orders.filter(o => 
-                o.status === 'PENDING_APPROVAL' || o.status === 'PROCESSING' // ✅
+                o.status === 'PENDING_APPROVAL' || o.status === 'PROCESSING' || o.status === 'PROCESSED'
             )
         );
         this.isLoading.set(false);
@@ -57,7 +57,7 @@ export class Requsts implements OnInit {
     this.webSocketService
       .getOrderUpdates()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((update) => {
+      .subscribe((update: OrderUpdate | null) => {
         if (!update) return;
 
         this.orderRequests.update((list) => {
@@ -69,18 +69,21 @@ export class Requsts implements OnInit {
           const exists = list.find((o) => o.id === update.id);
 
 // ✅ أضف PROCESSING
-if (!exists && (update.status === 'PENDING_APPROVAL' || update.status === 'PROCESSING')) {
+if (!exists && (update.status === 'PENDING_APPROVAL' || update.status === 'PROCESSING' || update.status === 'PROCESSED')) {
     return [...list, {
         id: update.id,
         userId: update.userId ?? 0,
-        code: update.code,
+        code: update.code ?? '',
         producerCode: update.producerCode ?? [],
         status: update.status,
         acceptableAT: update.acceptableAT ?? '',
         phonenumber: update.phonenumber ?? '',
-        deliveryAt: update.deliveryAt,
+        deliveryAt: update.deliveryAt ?? null,
         name: update.name ?? '',
-        establishmentname: update.establishmentname ?? ''
+        establishmentname: update.establishmentname ?? '',
+        latitude: update.latitude ?? null,
+        longitude: update.longitude ?? null,
+        address: update.address ?? null
     }];
 }
 
@@ -88,7 +91,7 @@ return list.map((o) => {
     if (o.id !== update.id) return o;
     
     // ✅ احذف فقط إذا تغير لـ status غير مطلوب
-    if (update.status !== 'PENDING_APPROVAL' && update.status !== 'PROCESSING') {
+    if (update.status !== 'PENDING_APPROVAL' && update.status !== 'PROCESSING' && update.status !== 'PROCESSED') {
         return null;
     }
     
@@ -97,9 +100,13 @@ return list.map((o) => {
         producerCode: update.producerCode ?? o.producerCode,
         status: update.status ?? o.status,
         acceptableAT: update.acceptableAT ?? o.acceptableAT,
+        deliveryAt: update.deliveryAt ?? o.deliveryAt,
         phonenumber: update.phonenumber ?? o.phonenumber,
         name: update.name ?? o.name,
-        establishmentname: update.establishmentname ?? o.establishmentname
+        establishmentname: update.establishmentname ?? o.establishmentname,
+        latitude: update.latitude ?? o.latitude,
+        longitude: update.longitude ?? o.longitude,
+        address: update.address ?? o.address
     };
 }).filter(o => o !== null) as ordermodel[];
         });

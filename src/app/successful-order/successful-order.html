@@ -65,7 +65,7 @@
                             <span class="material-symbols-outlined text-blue-700 mt-1">call</span>
                             <div>
                                 <p class="text-xs uppercase tracking-widest text-slate-500 mb-1">Phone Number</p>
-                                <p class="text-lg font-bold text-slate-900">+1 {{dataOrder()?.phonenumber}}</p>
+                                <p class="text-lg font-bold text-slate-900">{{dataOrder()?.phonenumber}}</p>
                             </div>
                         </div>
 
@@ -81,9 +81,9 @@
                         <!-- Product 1 -->
                     <div class="flex flex-col md:flex-row bg-white rounded-xl overflow-hidden group shadow-sm">
                         <div class="md:w-1/3 aspect-square overflow-hidden bg-slate-100">
-                            <img alt="Aeron Kinetic Chair"
+                            <img alt="{{ item.name }}"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1IieGFm3FbSE2ePx0dtsULrrmTGnuroGjH1esW7u7nDJx9SBqxjuA371Ir7YnAi6UoiIGgyM_PMLCXGFEymIIg_2wIn3kHG2egDzkjHAFhWJB9naPW0laR067F18IRrYlVaKe86t7r_8DGlow3p_xKRByPXnjlxWpiCCCZBGRY9llt73OqVfLBO5viLyo_7W1OyDw8jsangNCTswxEsNHeCzwpjgWHMtwlQExnHUuuuaJy0O4FhI3Hej8mS3H-i4N4aK7SStK9Gs">
+                                src="data:image/png;base64,{{item.image}}">
                         </div>
                         <div class="p-8 md:w-2/3 flex flex-col justify-center">
                             <div class="flex justify-between items-start mb-2">
@@ -107,8 +107,7 @@
                 <div class="mt-12 flex justify-end">
                     <button class="text-white font-bold py-4 px-10 rounded-lg shadow-sm hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-3 cursor-pointer"
                             style="background: linear-gradient(to bottom right, #004691, #265eae);"(click)="Confirmation()">
-                        <span class="material-symbols-outlined">print</span>
-                        <span>Catalog</span>
+                        <span>Back to Home</span>
                     </button>
                 </div>
             </div>

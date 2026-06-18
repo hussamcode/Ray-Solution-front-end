@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, OnInit, signal, computed } from '@angula
 import { Header } from "../header/header";
 import { Takitorder } from "../takitorder/takitorder";
 import { OrderService } from '../services/OrderService';
-import { ordermodel } from '../models/ordermodel.model';
+import { ordermodel, OrderUpdate } from '../models/ordermodel.model';
 import { WebsocketService } from '../services/websocket-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
@@ -24,7 +24,7 @@ export class order implements OnInit { // ✅ حرف كبير
   orderarry = signal<ordermodel[]>([]);
   errorMessage = signal<string>('');
   isLoading = signal<boolean>(false);
-  selectedFilter = signal<'ALL' | 'PENDING' | 'COMPLETED'>('ALL');
+  selectedFilter = signal<'ALL' | 'PENDING' | 'COMPLETED' | 'REJECTED'>('ALL');
 
   filteredOrders = computed(() => {
     const orders = this.orderarry();
@@ -35,6 +35,8 @@ export class order implements OnInit { // ✅ حرف كبير
         );
       case 'COMPLETED':
         return orders.filter(o => o.status === 'DELIVERED');
+      case 'REJECTED':
+        return orders.filter(o => o.status === 'REJECTED');
       default:
         return orders;
     }
@@ -60,11 +62,10 @@ export class order implements OnInit { // ✅ حرف كبير
     });
   }
 
-  // ✅ أضف realtime
   private handleOrderUpdates(): void {
     this.webSocketService.getOrderUpdates()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((update) => {
+      .subscribe((update: OrderUpdate | null) => {
         if (!update) return;
 
         this.orderarry.update((list) => {

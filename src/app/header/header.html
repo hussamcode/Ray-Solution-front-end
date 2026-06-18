@@ -24,13 +24,17 @@
             [routerLinkActiveOptions]="{exact: true}">
                 Support
             </a>
-                    <app-navbar></app-navbar>
+                    <app-navbar [level]="0" [title]="'Requests'"></app-navbar>
+                    <app-navbar [level]="0" [title]="'Order Location'" [route]="'order-location'"></app-navbar>
+                    <app-navbar [level]="1" [title]="'Producer'"></app-navbar>
+                    <app-navbar [level]="1" [title]="'Map'"></app-navbar>
+
         </nav>
 
         <!-- Actions -->
         <div class="flex items-center gap-2">
             
-            <!-- Search -->
+            @if (isCatalogPage) {
             <div class="relative hidden lg:block">
                 <span class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></span>
                 <input class="bg-slate-100 border-none rounded-xl pl-9 pr-4 py-2 w-56 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all duration-200"
@@ -39,6 +43,7 @@
                        [(ngModel)]="searchTermvale"
                        (ngModelChange)="onSearch($event)">
             </div>
+            }
 
 
             <button class="relative p-2.5 hover:bg-slate-100 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer" routerLink="/order">
@@ -55,6 +60,9 @@
             <!-- User -->
             <button class="p-2.5 hover:bg-slate-100 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer">
                 <span class="fa-regular fa-circle-user text-slate-700 text-lg"></span>
+            </button>
+            <button (click)="logout()" class="p-2.5 hover:bg-slate-100 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer" title="Logout">
+                <span class="fa-solid fa-right-from-bracket text-red-600 text-lg"></span>
             </button>
         </div>
     </div>

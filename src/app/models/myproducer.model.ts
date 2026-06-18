@@ -29,7 +29,7 @@ export interface UpdateProducerRequest {
   producerAdd: number;
 }
 export interface UpdateProducerRequestAdd {
- producerAdd: any;
+  producerAdd: number;
 }
  export interface ImageItem{
    id: number;

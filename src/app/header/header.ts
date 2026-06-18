@@ -3,13 +3,13 @@ import { WebsocketService } from '../services/websocket-service';
 import { MyProducer } from '../models/myproducer.model';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject, catchError, of } from 'rxjs';
 import { MyproducerService } from '../services/myproducer-service';
 import { ProducerService } from '../services/producer-service';
 import { OrderService } from '../services/OrderService';
-import { ordermodel,StatusUpdateMessage } from '../models/ordermodel.model';
+import { ordermodel, OrderUpdate } from '../models/ordermodel.model';
 import { Navbar } from "../navbar/navbar";
 @Component({
   selector: 'app-header',
@@ -29,8 +29,13 @@ throw new Error('Method not implemented.');
   allprotectedadd = signal<number>(0);
   private destroyRef = inject(DestroyRef);
    public orderService = inject(OrderService);
+   private router = inject(Router);
    //serch
   searchTermvale: string = '';
+
+  get isCatalogPage(): boolean {
+    return this.router.url === '/home';
+  }
 
  
  //order
@@ -54,16 +59,15 @@ throw new Error('Method not implemented.');
     this.webSocketService
       .getOrderUpdates()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((update) => {
+        .subscribe((update: OrderUpdate | null) => {
         if (update){
           this.handleStatusUpdate(update);
           this.loadOrders();
-        } else{
-          }
+        }
       });
   }
    
-      private handleStatusUpdate(update: StatusUpdateMessage): void {
+      private handleStatusUpdate(update: OrderUpdate): void {
       this.orderarry.update((order) => {
         const updatedOrder = order.find((orderitem) => orderitem.id === update.id);
         if (!updatedOrder) {
@@ -75,8 +79,7 @@ throw new Error('Method not implemented.');
   
           return {
             ...order,
-            producerCode: update.producerCode,
-  
+            producerCode: update.producerCode ?? order.producerCode,
           };
         });
   
@@ -84,6 +87,11 @@ throw new Error('Method not implemented.');
       });
     }
 
+
+    logout(): void {
+    localStorage.removeItem('token');
+    this.router.navigate(['/']);
+  }
 
     onSearch(value: string): void {
     this.producerService.setSearchTerm(value);     

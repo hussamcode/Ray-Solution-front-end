@@ -20,8 +20,11 @@ export interface Producer {
   brand: brandtype;
   stowage: number;
   producerAdd: number;
-  image: any;
- 
+  image: string | null;
+  active: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  address: string | null;
 }
 
 export interface CreateProducerRequest {
@@ -30,7 +33,11 @@ export interface CreateProducerRequest {
   description: string;
   brand: brandtype;
   stowage: number;
-  image: any;
+  image: string | null;
+  active: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  address: string | null;
 }
 
 export interface UpdateProducerRequest {
@@ -39,29 +46,43 @@ export interface UpdateProducerRequest {
   description: string;
   brand: brandtype;
   stowage: number;
-  image: any;
+  image: string | null;
+  active: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  address: string | null;
 }
 export interface UpdateProducerRequestAdd {
- producerAdd: any;
+  producerAdd: number;
 }
- export interface ImageItem{
-   id: number;
+export interface ImageItem {
+  id: number;
   url: SafeUrl;
 }
 export interface StatusUpdateMessage {
-  status: "AWAITING_CONFIRMATION" | "PENDING_APPROVAL" | "PROCESSING" | "PROCESSED" | "DELIVERED";
+  status: "AWAITING_CONFIRMATION" | "PENDING_APPROVAL" | "PROCESSING" | "PROCESSED" | "DELIVERED" | "REJECTED";
   acceptableAT: string;
-  userId: any;
-  producerCode: any;
+  userId: number;
+  producerCode: string[];
   id: number;
   code: string;
-  name:string;
+  name: string;
   description: string;
   brand: brandtype;
   stowage: number;
   producerAdd: number;
-  image: any;
+  image: string | null;
+  active: boolean;
   message: string;
+}
+
+export interface ProducerLocation {
+  id: number;
+  code: string;
+  name: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 

@@ -1,6 +1,3 @@
-import { SafeUrl } from "@angular/platform-browser";
-import { Data } from "@angular/router";
-
 export const State = {
   AWAITING_CONFIRMATION: 'Awaiting Confirmation',
   PENDING_APPROVAL: 'Pending Approval',
@@ -17,58 +14,61 @@ export interface ordermodel {
   code: string;
   producerCode: string[];
 
-  acceptableAT: Date | null;
-  deliveryAt: Date | null;
+  acceptableAT: string | null;
+  deliveryAt: string | null;
 
   status: statetype;
 
-  phonenumber: number;
+  phonenumber: string;
   name: string;
   establishmentname: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
 }
 
 export interface CreateOrderRequest {
   producerCode: string;
-
 }
 
 export interface UpdateOrderRequest {
   producerCode: string;
 }
 export interface UpdateStateRequest {
- status: statetype;
-  deliveryAt?: Date;
+  status: statetype;
+  deliveryAt?: string;
 }
 
-export interface StatusUpdateMessage {
-  id: number;
-  userId: number;
-  code: string;
-  producerCode: string[];
-   acceptableAT: string;
-     deliveryAt: Data;
- status:statetype;
- phonenumber:number;
- name:string;
- establishmentname:string;
- message: string;
+export interface UpdateInformationRequest {
+  establishmentname: string;
+  name: string;
+  phonenumber: string;
+  status: statetype;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
 }
-export interface UpdateInformationRequest{
-  establishmentname:string;
-  name:string;
-  phonenumber:string;
-  status:statetype;
+
+export interface UpdateLocationRequest {
+  latitude: number | null;
+  longitude: number | null;
+  address: string;
 }
+
 export interface OrderUpdate {
   id: number;
   userId?: number;
   code?: string;
   producerCode?: string[];
-  acceptableAT?: Date;
+  acceptableAT?: string;
   status?: statetype;
-  phonenumber?: number;
+  phonenumber?: string;
+  deliveryAt?: string;
   name?: string;
   establishmentname?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
   message: 'deleted' | 'updated' | 'created';
 }
 

@@ -1,0 +1,205 @@
+<div class="bg-gray-50 text-gray-900 overflow-x-hidden antialiased min-h-screen">
+  <app-header></app-header>
+
+  <div *ngIf="successMessage" class="fixed right-6 top-20 z-50 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-xl flex items-center gap-2">
+    <span class="material-symbols-outlined text-base">check_circle</span>
+    <span>{{ successMessage }}</span>
+  </div>
+  <div *ngIf="errorMessage" class="fixed right-6 top-20 z-50 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-xl flex items-center gap-2">
+    <span class="material-symbols-outlined text-base">error</span>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- LEFT COLUMN: Image upload and product list -->
+      <div class="lg:col-span-5 order-2 lg:order-1 space-y-6">
+        <section class="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm">
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">Product Images</h2>
+          <p class="text-sm text-gray-600 mb-5">Add a high-quality image of your product to attract customers.</p>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2 aspect-video bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-indigo-400 hover:bg-gray-100 transition-all group" (click)="fileInput.click()">
+              <input #fileInput type="file" accept="image/*" class="hidden" (click)="$event.stopPropagation()" (change)="onFileSelected($event)">
+              <button type="button" class="material-symbols-outlined text-4xl text-gray-400 mb-2 group-hover:text-indigo-500">cloud_upload</button>
+              <p class="text-sm font-medium text-gray-700">Click to upload or drag image here</p>
+              <p class="text-xs text-gray-400 mt-1">Max 5MB (PNG, JPG)</p>
+            </div>
+
+            <div *ngIf="imagePreview" class="aspect-square bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center relative group overflow-hidden">
+              <img [src]="imagePreview" alt="Preview" class="h-48 w-48 rounded-lg border object-cover">
+              <button type="button" (click)="removeImage()" class="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                <span class="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+            <div class="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition" (click)="fileInput.click()">
+              <span class="material-symbols-outlined text-gray-400">add_photo_alternate</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">Products</h2>
+              <p class="text-sm text-gray-600">Select a product to update or delete it.</p>
+            </div>
+            <button type="button" (click)="loadProducts()" class="h-10 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+              Refresh
+            </button>
+          </div>
+
+          <div class="relative mb-4">
+            <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400 text-lg">search</span>
+            <input
+              type="text"
+              name="productSearch"
+              [(ngModel)]="productSearchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              class="w-full h-11 pl-10 pr-10 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm"
+              placeholder="Search by product name or code">
+            <button *ngIf="productSearchTerm" type="button" (click)="clearProductSearch()" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-700 transition">
+              <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+
+          <div *ngIf="isLoadingProducts" class="py-8 text-center text-sm text-gray-500">Loading products...</div>
+          <div *ngIf="!isLoadingProducts && products.length === 0" class="py-8 text-center text-sm text-gray-500">No products found.</div>
+          <div *ngIf="!isLoadingProducts && products.length > 0 && filteredProducts.length === 0" class="py-8 text-center text-sm text-gray-500">No products match your search.</div>
+
+          <div class="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+            <div *ngFor="let product of filteredProducts" class="border border-gray-200 rounded-xl p-3 flex gap-3 items-center" [class.ring-2]="selectedProductId === product.id" [class.ring-indigo-300]="selectedProductId === product.id">
+              <div class="h-16 w-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shrink-0">
+                <img *ngIf="getImageSrc(product.image); else noImage" [src]="getImageSrc(product.image)" alt="Product" class="h-full w-full object-cover">
+                <ng-template #noImage>
+                  <span class="material-symbols-outlined text-gray-400">inventory_2</span>
+                </ng-template>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <h3 class="font-semibold text-gray-900 truncate">{{ product.name }}</h3>
+                <p class="text-xs text-gray-500 truncate">Code: {{ product.code }}</p>
+                <p class="text-xs text-gray-500">Qty: {{ product.stowage || 0 }} | Brand: {{ product.brand || 'Other' }} | <span [class.text-green-600]="product.active" [class.text-red-500]="!product.active">{{ product.active ? 'Active' : 'Inactive' }}</span></p>
+              </div>
+
+              <div class="flex flex-col gap-2 shrink-0">
+                <button type="button" (click)="editProduct(product)" class="h-9 px-3 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition">
+                  Update
+                </button>
+                <button type="button" (click)="deleteProduct(product)" [disabled]="deletingProductId === product.id" class="h-9 px-3 rounded-lg bg-red-50 text-red-700 text-sm font-semibold hover:bg-red-100 transition disabled:opacity-60 disabled:cursor-not-allowed">
+                  {{ deletingProductId === product.id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: Product form -->
+      <div class="lg:col-span-7 order-1 lg:order-2 space-y-6">
+        <form class="space-y-6" (ngSubmit)="saveProducer()">
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+            <div class="flex items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="text-2xl font-bold text-gray-900">{{ selectedProductId ? 'Update Product' : 'Add Product' }}</h1>
+                <p class="text-sm text-gray-600">{{ selectedProductId ? 'Edit the selected product details.' : 'Create a new product in the system.' }}</p>
+              </div>
+              <button *ngIf="selectedProductId" type="button" (click)="cancelEdit()" class="h-10 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+                Cancel
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Name</label>
+                <input type="text" name="name" [(ngModel)]="producerForm.name" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-base text-gray-900 shadow-sm" placeholder="e.g. Smart Watch Pro Series 5" required>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Brand</label>
+                <div class="relative">
+                  <select name="brand" [(ngModel)]="producerForm.brand" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 appearance-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm">
+                    <option *ngFor="let brand of brands" [ngValue]="brand">{{ brand }}</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Code</label>
+                <input type="text" name="code" [(ngModel)]="producerForm.code" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm" placeholder="e.g. PRD-1001" required>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Available Quantity</label>
+                <input type="number" name="stowage" [(ngModel)]="producerForm.stowage" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm" placeholder="100" min="0">
+              </div>
+
+              <div class="flex items-center gap-3">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="active" [(ngModel)]="producerForm.active" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
+                <label class="text-sm font-medium text-gray-700">Active</label>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Description</label>
+                <div class="border border-gray-300 rounded-xl overflow-hidden bg-white">
+                  <div class="bg-gray-50 p-2 flex gap-2 border-b border-gray-200">
+                    <button type="button" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-200 transition"><span class="material-symbols-outlined text-sm text-gray-600">format_bold</span></button>
+                    <button type="button" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-200 transition"><span class="material-symbols-outlined text-sm text-gray-600">format_italic</span></button>
+                    <button type="button" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-200 transition"><span class="material-symbols-outlined text-sm text-gray-600">format_list_bulleted</span></button>
+                    <div class="w-px h-6 bg-gray-300 self-center"></div>
+                    <button type="button" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-200 transition"><span class="material-symbols-outlined text-sm text-gray-600">link</span></button>
+                  </div>
+                  <textarea name="description" [(ngModel)]="producerForm.description" class="w-full p-4 bg-white border-none focus:ring-0 text-gray-700 text-base resize-none custom-scrollbar" placeholder="Write a detailed description of your product here..." rows="5"></textarea>
+                </div>
+              </div>
+
+              <div class="md:col-span-2 border-t border-gray-200 pt-6">
+                <div class="flex items-center justify-between gap-2 mb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-gray-500 text-lg">location_on</span>
+                    <h3 class="text-sm font-semibold text-gray-700">Product Location</h3>
+                  </div>
+                  <button type="button" (click)="useMyLocation()" [disabled]="isGettingLocation" class="h-9 px-4 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-base">{{ isGettingLocation ? 'hourglass_top' : 'my_location' }}</span>
+                    {{ isGettingLocation ? 'Locating...' : 'Use My Location' }}
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Latitude</label>
+                    <input type="number" name="latitude" [(ngModel)]="producerForm.latitude" step="any" (ngModelChange)="onLatLngInput()" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm" placeholder="e.g. 33.3128">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Longitude</label>
+                    <input type="number" name="longitude" [(ngModel)]="producerForm.longitude" step="any" (ngModelChange)="onLatLngInput()" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm" placeholder="e.g. 44.3615">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
+                    <input type="text" name="address" [(ngModel)]="producerForm.address" class="w-full h-11 px-4 rounded-xl bg-white border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-gray-800 shadow-sm" placeholder="e.g. Baghdad, Iraq">
+                  </div>
+                </div>
+
+                <div id="picker-map" class="location-map"></div>
+                <p class="text-xs text-gray-400 mt-1.5">Click on the map to set coordinates, or use "Use My Location" to auto-fill.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 pt-2">
+            <button type="submit" [disabled]="isSubmitting" class="flex-1 h-12 bg-indigo-600 text-white rounded-xl font-semibold text-base shadow-md hover:bg-indigo-700 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-lg">{{ selectedProductId ? 'edit' : 'add_circle' }}</span>
+              {{ isSubmitting ? (selectedProductId ? 'Updating Product...' : 'Adding Product...') : (selectedProductId ? 'Update Product' : 'Add Product to System') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

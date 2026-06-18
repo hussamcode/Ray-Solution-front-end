@@ -5,10 +5,10 @@ import { jwtDecode } from 'jwt-decode';
 interface JwtPayload {
   sub: string;
   exp: number;
-  role: string; // ✅ ADMIN / MANAGER / USER
+  role: string;
 }
 
-export const adminGuard: CanActivateFn = () => {
+export const staffGuard: CanActivateFn = () => {
   const router = inject(Router);
   const token = localStorage.getItem('token');
 
@@ -23,7 +23,7 @@ export const adminGuard: CanActivateFn = () => {
       return router.createUrlTree(['/']);
     }
 
-    if (decoded.role !== 'ADMIN') {
+    if (decoded.role !== 'ADMIN' && decoded.role !== 'MANAGER') {
       return router.createUrlTree(['/order']);
     }
 

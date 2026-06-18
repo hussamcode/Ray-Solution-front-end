@@ -1,4 +1,4 @@
-import { Component,computed,DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { Card } from '../card/card';
 import { Producer, StatusUpdateMessage } from '../models/producer.model';
@@ -34,10 +34,14 @@ export class Catalog implements OnInit {
     
   }
   loadProducer(): void {
-    this.producerService.getAllProducer().subscribe((producers) => {
+    this.producerService.getAllProducer().subscribe({
+      next: (producers) => {
       this.protecteditemlist.set(producers);
       this.filteredproducers.set(producers); 
-      
+      },
+      error: (err) => {
+        console.error('Failed to load producers:', err);
+      }
     });
      this.producerService.currentSearchTerm$
       .subscribe(value => {

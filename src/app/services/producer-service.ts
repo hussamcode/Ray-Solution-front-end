@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateProducerRequest, Producer, UpdateProducerRequest, UpdateProducerRequestAdd } from '../models/producer.model';
+import { environment } from '../../environments/environment';
+import { CreateProducerRequest, Producer, ProducerLocation, UpdateProducerRequest, UpdateProducerRequestAdd } from '../models/producer.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class ProducerService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/producer';
+  private apiUrl = `${environment.apiUrl}/api/producer`;
 
   // Search
   public searchTerm = new BehaviorSubject<string>('');
@@ -33,6 +34,10 @@ export class ProducerService {
     return this.http.get<Producer[]>(this.apiUrl, { headers: this.headers });
   }
 
+  getAllProducerIncludeInactive(): Observable<Producer[]> {
+    return this.http.get<Producer[]>(`${this.apiUrl}/all`, { headers: this.headers });
+  }
+
   getProducerByID(id: number): Observable<Producer> {
     return this.http.get<Producer>(`${this.apiUrl}/${id}`, { headers: this.headers });
   }
@@ -47,5 +52,13 @@ export class ProducerService {
 
   updateProducerAdd(id: number, request: UpdateProducerRequestAdd): Observable<Producer> {
     return this.http.put<Producer>(`${this.apiUrl}/${id}/producerAdd`, request, { headers: this.headers });
+  }
+
+  deleteProducer(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.headers });
+  }
+
+  getLocations(): Observable<ProducerLocation[]> {
+    return this.http.get<ProducerLocation[]>(`${this.apiUrl}/locations`, { headers: this.headers });
   }
 }

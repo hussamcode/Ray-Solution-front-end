@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
@@ -15,11 +15,14 @@ interface JwtPayload {
   imports: [RouterLink, RouterLinkActive, FormsModule],
   templateUrl: './navbar.html'
 })
-export class Navbar {
+export class Navbar implements OnInit {
 
   isAdmin = false;
-
-  constructor() {
+  @Input() level: number = 0;
+  @Input() title: string = '';
+  @Input() route: string = '';
+  
+  ngOnInit() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
@@ -33,7 +36,11 @@ export class Navbar {
         return;
       }
 
-      this.isAdmin = decoded.role === 'ADMIN' || decoded.role === 'MANAGER';
+      if (this.level === 0) {
+        this.isAdmin = decoded.role === 'ADMIN' || decoded.role === 'MANAGER';
+      } else {
+        this.isAdmin = decoded.role === 'ADMIN';
+      }
 
     } catch (error) {
       localStorage.removeItem('token');

@@ -22,14 +22,14 @@
 
                 <!-- Card -->
             @for (item of orderRequests(); track item.code) {
-                @if (role=='manger') {
+                @if (role=='manager') {
                     @if (item.status=='PENDING_APPROVAL') {
-                    <app-takitrequsts [orderRequest]="item"></app-takitrequsts>
+                    <app-take-requests [orderRequest]="item"></app-take-requests>
                 }
                 }
                     @if (role=='admin') {
-                    @if (item.status=='PROCESSING') {
-                    <app-takitrequsts [orderRequest]="item"></app-takitrequsts>
+                    @if (item.status=='PROCESSING' || item.status=='PROCESSED') {
+                    <app-take-requests [orderRequest]="item"></app-take-requests>
                 }
                 }
 

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CreateProducerRequest, MyProducer, UpdateProducerRequest } from '../models/myproducer.model';
 
@@ -8,7 +9,7 @@ import { CreateProducerRequest, MyProducer, UpdateProducerRequest } from '../mod
 })
 export class MyproducerService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/login/producer';
+  private apiUrl = `${environment.apiUrl}/api/login/producer`;
 
   // Search
   public searchTerm = new BehaviorSubject<string>('');

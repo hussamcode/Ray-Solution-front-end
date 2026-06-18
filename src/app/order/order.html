@@ -72,6 +72,14 @@
                             (click)="selectedFilter.set('COMPLETED')">
                         Completed
                     </button>
+                    <button class="px-6 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all"
+                            [class.bg-white]="selectedFilter() === 'REJECTED'"
+                            [class.text-red-700]="selectedFilter() === 'REJECTED'"
+                            [class.shadow-sm]="selectedFilter() === 'REJECTED'"
+                            [class.text-slate-500]="selectedFilter() !== 'REJECTED'"
+                            (click)="selectedFilter.set('REJECTED')">
+                        Rejected
+                    </button>
                 </div>
 
                 <!-- Loading -->

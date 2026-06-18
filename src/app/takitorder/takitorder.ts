@@ -8,7 +8,7 @@ import {
   signal
 } from '@angular/core';
 
-import { ordermodel } from '../models/ordermodel.model';
+import { ordermodel, OrderUpdate } from '../models/ordermodel.model';
 import { WebsocketService } from '../services/websocket-service';
 import { OrderService } from '../services/OrderService';
 import { catchError, of } from 'rxjs';
@@ -82,12 +82,12 @@ export class Takitorder implements OnInit {
           return of(null);
         })
       )
-      .subscribe((order: any) => {
+      .subscribe((order) => {
 
         if (!order) return;
 
         this.ordertake.set(order);
-        this.loadproducer(); // 👈 مهم
+        this.loadproducer();
       });
   }
 
@@ -110,7 +110,7 @@ export class Takitorder implements OnInit {
             return of(null);
           })
         )
-        .subscribe((producer: any) => {
+        .subscribe((producer) => {
 
           if (producer) {
             this.producerall.update(arr => [...arr, producer]);
@@ -128,7 +128,7 @@ export class Takitorder implements OnInit {
     this.webSocketService
       .getOrderUpdates()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((update) => {
+      .subscribe((update: OrderUpdate | null) => {
 
         if (!update) return;
 
@@ -144,13 +144,13 @@ export class Takitorder implements OnInit {
 
           return {
             ...ordertake,
-            producerCode: update.producerCode,
-            status: update.status,
-            acceptableAT: update.acceptableAT,
-             deliveryAt: update.deliveryAt,
-            phonenumber: update.phonenumber,
-            name: update.name,
-            establishmentname:update.establishmentname
+            producerCode: update.producerCode ?? ordertake.producerCode,
+            status: update.status ?? ordertake.status,
+            acceptableAT: update.acceptableAT ?? ordertake.acceptableAT,
+            deliveryAt: update.deliveryAt ?? ordertake.deliveryAt,
+            phonenumber: update.phonenumber ?? ordertake.phonenumber,
+            name: update.name ?? ordertake.name,
+            establishmentname: update.establishmentname ?? ordertake.establishmentname
           };
         });
       });
@@ -190,9 +190,14 @@ export class Takitorder implements OnInit {
       });
   }
   Confirmation(): void {
-    this.router.navigate(['confirm-requset']);
+    this.router.navigate(['confirm-request']);
   }
-  formatDate(value: any) {
+
+  changeLocation(): void {
+    this.router.navigate(['/order-location'], { queryParams: { code: this.ordercode } });
+  }
+
+  formatDate(value: string | null | undefined) {
   if (!value) return null;
 
   // حذف microseconds الزائدة

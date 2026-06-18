@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CreateOrderRequest, ordermodel, UpdateInformationRequest, UpdateOrderRequest, UpdateStateRequest } from '../models/ordermodel.model';
+import { environment } from '../../environments/environment';
+import { CreateOrderRequest, ordermodel, UpdateInformationRequest, UpdateLocationRequest, UpdateOrderRequest, UpdateStateRequest } from '../models/ordermodel.model';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { CreateOrderRequest, ordermodel, UpdateInformationRequest, UpdateOrderRe
 export class OrderService { 
 
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/api/login/order';
+    private apiUrl = `${environment.apiUrl}/api/login/order`;
 
     public searchTerm = new BehaviorSubject<string>('');
     public currentSearchTerm$ = this.searchTerm.asObservable();
@@ -60,7 +61,11 @@ export class OrderService {
     }
  
     updateOrderInformation(code: string, request: UpdateInformationRequest): Observable<ordermodel> {
-        return this.http.put<ordermodel>(`${this.apiUrl}/${code}/confirmrequset`, request, { headers: this.headers });
+        return this.http.put<ordermodel>(`${this.apiUrl}/${code}/confirmrequest`, request, { headers: this.headers });
+    }
+
+    updateOrderLocation(code: string, request: UpdateLocationRequest): Observable<ordermodel> {
+        return this.http.put<ordermodel>(`${this.apiUrl}/${code}/location`, request, { headers: this.headers });
     }
 
     deleteOrder(code: string): Observable<void> {

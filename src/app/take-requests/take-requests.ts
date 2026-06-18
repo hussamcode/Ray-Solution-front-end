@@ -1,11 +1,14 @@
 import {
+  AfterViewInit,
   Component,
   DestroyRef,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   input,
-  effect
+  effect,
+  afterNextRender
 } from '@angular/core';
 
 import { catchError, finalize, of } from 'rxjs';
@@ -20,6 +23,8 @@ import { WebsocketService } from '../services/websocket-service';
 
 import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import * as L from 'leaflet';
 
 interface JwtPayload {
   sub: string;
@@ -28,13 +33,13 @@ interface JwtPayload {
 }
 
 @Component({
-  selector: 'app-takitrequsts',
+  selector: 'app-take-requests',
   standalone: true,
-  imports: [FormsModule],
-  templateUrl: './takitrequsts.html',
-  styleUrl: './takitrequsts.css',
+  imports: [FormsModule, DatePipe],
+  templateUrl: './take-requests.html',
+  styleUrl: './take-requests.css',
 })
-export class Takitrequsts implements OnInit {
+export class TakeRequests implements OnInit, OnDestroy {
 
   readonly orderRequest = input.required<ordermodel>();
   currentOrder = signal<ordermodel | null>(null);
@@ -53,21 +58,84 @@ export class Takitrequsts implements OnInit {
   isManager = false;
 
   deliveryAt: string = '';
+  minDate: string = '';
+
+  private orderMap: L.Map | null = null;
 
   constructor() {
     effect(() => {
       this.currentOrder.set(this.orderRequest());
     });
 
+    afterNextRender(() => {
+      this.initOrderMapWithRetry();
+    });
+
     const role = this.getRole();
     this.isAdmin = role === 'ADMIN';
     this.isManager = role === 'MANAGER';
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    this.minDate = now.toISOString().slice(0, 16);
   }
 
   ngOnInit(): void {
     this.loadProducer();
     this.handleWebSocketUpdates();
     this.handleOrderUpdates();
+  }
+
+  ngOnDestroy(): void {
+    if (this.orderMap) {
+      this.orderMap.remove();
+      this.orderMap = null;
+    }
+  }
+
+  private initOrderMapWithRetry(retries = 20): void {
+    const order = this.orderRequest();
+    if (order.latitude == null || order.longitude == null) return;
+
+    const el = document.getElementById(`order-map-${order.code}`);
+    if (el && el.offsetHeight > 0) {
+      this.initOrderMap();
+    } else if (retries > 0) {
+      setTimeout(() => this.initOrderMapWithRetry(retries - 1), 50);
+    }
+  }
+
+  private initOrderMap(): void {
+    const order = this.orderRequest();
+    if (order.latitude == null || order.longitude == null) return;
+
+    const mapId = `order-map-${order.code}`;
+    const mapEl = document.getElementById(mapId);
+    if (!mapEl || this.orderMap) return;
+
+    this.orderMap = L.map(mapId, {
+      center: [order.latitude, order.longitude],
+      zoom: 14,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(this.orderMap);
+
+    const icon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    L.marker([order.latitude, order.longitude], { icon }).addTo(this.orderMap)
+      .bindPopup(order.address || `${order.latitude}, ${order.longitude}`)
+      .openPopup();
   }
 
   private getRole(): string {
@@ -139,7 +207,7 @@ export class Takitrequsts implements OnInit {
     console.log("test:"+this.deliveryAt);
     this.orderService.updateOrderStatusAdmin(order.code, {
       status,
-      deliveryAt: this.isAdmin ? new Date(this.deliveryAt) : undefined
+      deliveryAt: this.isAdmin ? this.deliveryAt : undefined
     }).pipe(
       finalize(() => this.isSubmitting.set(false))
     ).subscribe({
@@ -163,6 +231,24 @@ export class Takitrequsts implements OnInit {
     ).subscribe({
       next: () => {},
       error: () => this.errorMessage.set('Failed to reject order')
+    });
+  }
+
+  Deliver(): void {
+    const order = this.currentOrder();
+
+    if (!order?.code || this.isSubmitting()) return;
+
+    this.isSubmitting.set(true);
+    this.errorMessage.set('');
+
+    this.orderService.updateOrderStatusAdmin(order.code, {
+      status: 'DELIVERED'
+    }).pipe(
+      finalize(() => this.isSubmitting.set(false))
+    ).subscribe({
+      next: () => {},
+      error: () => this.errorMessage.set('Failed to mark as delivered')
     });
   }
 

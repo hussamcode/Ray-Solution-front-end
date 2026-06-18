@@ -1,7 +1,9 @@
 import { DestroyRef, inject, Injectable } from "@angular/core";
 import { Client, StompSubscription, Versions } from "@stomp/stompjs";
 import { BehaviorSubject, Observable } from "rxjs";
+import { environment } from "../../environments/environment";
 import { StatusUpdateMessage } from "../models/producer.model";
+import { OrderUpdate } from "../models/ordermodel.model";
 
 @Injectable(
   {providedIn:'root'}
@@ -11,7 +13,7 @@ export class WebsocketService {
   private client!: Client;
   private connected$ = new BehaviorSubject<boolean>(false);
   private stausUpdate$ = new BehaviorSubject<null | StatusUpdateMessage>(null);
-  private orderUpdate$ = new BehaviorSubject<any | null>(null);
+  private orderUpdate$ = new BehaviorSubject<OrderUpdate | null>(null);
 
   private subscriptions = new Map<string, StompSubscription>();
 
@@ -28,7 +30,7 @@ export class WebsocketService {
 
   initClient(): void{
     this.client = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: environment.wsUrl,
       stompVersions: Versions.default,
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
@@ -96,7 +98,7 @@ export class WebsocketService {
   
     this.subscriptions.set('/topic/producer', subscription);
   }
-  getOrderUpdates(): Observable<any | null> {
+  getOrderUpdates(): Observable<OrderUpdate | null> {
     return this.orderUpdate$.asObservable();
 }
    disconnect(): void {
