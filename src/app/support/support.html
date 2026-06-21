@@ -2,6 +2,22 @@
     <app-header></app-header>
     <main class="pb-24">
 
+        <!-- Success Toast -->
+        @if (submitSuccess()) {
+            <div class="fixed top-24 right-6 z-50 flex items-center gap-3 rounded-xl bg-emerald-500 px-5 py-3 text-white shadow-lg">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span class="font-semibold">Message sent successfully!</span>
+            </div>
+        }
+
+        <!-- Error Toast -->
+        @if (submitError()) {
+            <div class="fixed top-24 right-6 z-50 flex items-center gap-3 rounded-xl bg-red-500 px-5 py-3 text-white shadow-lg">
+                <span class="material-symbols-outlined">error</span>
+                <span class="font-semibold">{{ errorMessage() }}</span>
+            </div>
+        }
+
         <section class="relative overflow-hidden bg-gray-50 py-24 px-6">
 
             <!-- Background Blur -->
@@ -51,7 +67,7 @@
                 </p>
 
                 <p class="text-slate-600">
-                    enterprise-support@atrium.io
+                    h14426519&#64;gmail.com
                 </p>
 
                 <p class="mt-1 text-xs text-slate-400">
@@ -93,7 +109,7 @@
         <!-- Form -->
         <div class="rounded-3xl bg-white p-10 shadow-sm md:col-span-3">
 
-            <form class="space-y-6">
+            <form class="space-y-6" (ngSubmit)="onSubmit()">
 
             <div class="grid gap-6 md:grid-cols-2">
 
@@ -107,8 +123,14 @@
                 <input
                     type="text"
                     placeholder="John Doe"
-                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                    [(ngModel)]="formData.name"
+                    name="name"
+                    [class]="errors()['name'] ? 'w-full rounded-xl border border-red-400 bg-slate-50 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-500/20' : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20'"
                 />
+
+                @if (errors()['name']) {
+                    <p class="text-xs text-red-500">{{ errors()['name'] }}</p>
+                }
 
                 </div>
 
@@ -121,9 +143,15 @@
 
                 <input
                     type="email"
-                    placeholder="j.doe@company.com"
-                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                    placeholder="j.doe&#64;company.com"
+                    [(ngModel)]="formData.email"
+                    name="email"
+                    [class]="errors()['email'] ? 'w-full rounded-xl border border-red-400 bg-slate-50 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-500/20' : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20'"
                 />
+
+                @if (errors()['email']) {
+                    <p class="text-xs text-red-500">{{ errors()['email'] }}</p>
+                }
 
                 </div>
 
@@ -137,6 +165,8 @@
                 </label>
 
                 <select
+                [(ngModel)]="formData.category"
+                name="category"
                 class="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
                 >
                 <option>Technical Support</option>
@@ -158,17 +188,34 @@
                 <textarea
                 rows="5"
                 placeholder="How can our procurement specialists assist you today?"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                [(ngModel)]="formData.message"
+                name="message"
+                [class]="errors()['message'] ? 'w-full rounded-xl border border-red-400 bg-slate-50 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-500/20' : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20'"
                 ></textarea>
+
+                @if (errors()['message']) {
+                    <p class="text-xs text-red-500">{{ errors()['message'] }}</p>
+                }
 
             </div>
 
             <!-- Button -->
             <button
-                type="button"
-                class="w-full rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 py-4 font-bold text-white transition hover:shadow-lg active:scale-[0.98]"
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="w-full rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 py-4 font-bold text-white transition hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                Submit Support Ticket
+                @if (isSubmitting()) {
+                    <span class="inline-flex items-center gap-2">
+                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        Sending...
+                    </span>
+                } @else {
+                    Submit Support Ticket
+                }
             </button>
 
             <p class="text-center text-xs italic text-slate-400">
